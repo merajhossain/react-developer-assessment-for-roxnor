@@ -111,13 +111,14 @@ export const useCategories = () => {
     }
   }, [error]);
 
-  // Ensure categories are strings
-  const validCategories = categories.filter((cat): cat is string => 
-    typeof cat === 'string' && cat.length > 0
-  );
+  // Map category objects to { slug, name } pairs
+  const validCategories = categories
+    .filter((cat) => cat && typeof cat === 'object' && cat.slug)
+    .map((cat) => ({ slug: cat.slug, name: cat.name }));
 
   return {
-    categories: validCategories,
+    categories: validCategories.map((c) => c.slug), // keep backward compat (slug used as value)
+    categoryOptions: validCategories,
     isLoading,
     error,
   };

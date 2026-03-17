@@ -1,200 +1,150 @@
-import React from 'react';
-import { Card, Button, Row, Col, Tag, Rate, Image, Descriptions, Space, Spin, Modal } from 'antd';
-import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Button, Carousel, Drawer, Form, Alert } from 'antd';
+import { ArrowLeftOutlined, EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProduct, useDeleteProduct } from '../hooks/useProducts';
-import { formatPrice, getStockColor, getStockStatus } from '../utils/formatters';
-
-const { confirm } = Modal;
+import { useProduct } from '../hooks/useProducts';
+import PageBreadcrumb from '../components/PageBreadcrumb';
+import ProductInfo from '../components/ProductInfo';
+import EditProductForm from '../components/EditProductForm';
+import ProductDetailSkeleton from '../components/ProductDetailSkeleton';
 
 const ProductDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { product, isLoading, error } = useProduct(id ? parseInt(id) : undefined);
-  const { deleteProduct, isLoading: isDeleting } = useDeleteProduct();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [form] = Form.useForm();
 
-  const handleDelete = () => {
+  const openEditDrawer = () => {
     if (!product) return;
-
-    confirm({
-      title: 'Are you sure you want to delete this product?',
-      icon: <ExclamationCircleOutlined />,
-      content: `This will permanently delete "${product.title}" from your inventory.`,
-      okText: 'Yes, Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: async () => {
-        try {
-          await deleteProduct(product.id);
-          navigate('/products');
-        } catch (error) {
-          // Error is handled in the hook
-        }
-      },
+    form.setFieldsValue({
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      brand: product.brand,
+      category: product.category,
+      discountPercentage: product.discountPercentage,
     });
+    setDrawerOpen(true);
+  };
+
+  const handleEditSubmit = (values: any) => {
+    console.log('Updated values:', values);
+    setDrawerOpen(false);
+    form.resetFields();
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <Spin size="large" />
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (error || !product) {
     return (
-      <div className="max-w-6xl mx-auto">
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={() => navigate('/products')}
-          className="mb-4"
-        >
+      <div className="max-w-lg mx-auto py-24 text-center space-y-6">
+        <Alert
+          type="error"
+          showIcon
+          message="Product Not Found"
+          description="This product doesn't exist or could not be loaded."
+        />
+        <Button type="primary" size="large" icon={<ArrowLeftOutlined />} onClick={() => navigate('/products')}>
           Back to Products
         </Button>
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold mb-2">Product Not Found</h2>
-          <p className="text-gray-600">The product you're looking for doesn't exist or has been removed.</p>
-        </div>
       </div>
     );
   }
 
+  const allImages = [
+    product.thumbnail,
+    ...(product.images ?? []).filter((img) => img !== product.thumbnail),
+  ];
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={() => navigate('/products')}
-          className="mb-4"
-        >
-          Back to Products
-        </Button>
-        
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{product.title}</h1>
-            <Space>
-              <Tag color="blue">{product.category}</Tag>
-              <Tag color={getStockColor(product.stock)}>
-                {getStockStatus(product.stock)}
-              </Tag>
-            </Space>
-          </div>
-          
-          <Space>
-            <Button type="primary" icon={<EditOutlined />}>
-              Edit Product
-            </Button>
-            <Button 
-              danger 
-              icon={<DeleteOutlined />}
-              onClick={handleDelete}
-              loading={isDeleting}
-            >
-              Delete
-            </Button>
-          </Space>
+    <div className="space-y-6 pb-16">
+      <PageBreadcrumb
+        items={[{ title: 'Products', path: '/products' }, { title: product.title }]}
+      />
+
+      {/* Page Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.2 }}>
+            Product Details
+          </h1>
+          <p style={{ fontSize: 14, color: '#94a3b8', margin: '4px 0 0' }}>{product.title}</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/products')} size="large">
+            Back
+          </Button>
+          <Button type="primary" icon={<EditOutlined />} size="large" onClick={openEditDrawer}>
+            Edit Product
+          </Button>
         </div>
       </div>
 
-      <Row gutter={[24, 24]}>
-        <Col xs={24} lg={12}>
-          <Card title="Product Images">
-            <div className="space-y-4">
-              <Image
-                width="100%"
-                src={product.thumbnail}
-                alt={product.title}
-                className="rounded-lg"
-              />
-              {product.images && product.images.length > 0 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {product.images.map((image, index) => (
-                    <Image
-                      key={index}
-                      width="100%"
-                      height={80}
-                      src={image}
-                      alt={`${product.title} ${index + 1}`}
-                      className="rounded object-cover"
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
-        </Col>
+      {/* Content Grid */}
+      <div style={{ marginTop: 32, gap: 48, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
 
-        <Col xs={24} lg={12}>
-          <Card title="Product Details">
-            <Descriptions column={1} bordered>
-              <Descriptions.Item label="Price">
-                <span className="text-2xl font-bold text-green-600">
-                  {formatPrice(product.price)}
-                </span>
-                {product.discountPercentage > 0 && (
-                  <Tag color="red" className="ml-2">
-                    -{product.discountPercentage}%
-                  </Tag>
-                )}
-              </Descriptions.Item>
-              
-              <Descriptions.Item label="Rating">
-                <Space>
-                  <Rate disabled defaultValue={product.rating} allowHalf />
-                  <span>({product.rating}/5)</span>
-                </Space>
-              </Descriptions.Item>
-              
-              <Descriptions.Item label="Stock">
-                <Tag color={getStockColor(product.stock)}>
-                  {product.stock} units available
-                </Tag>
-              </Descriptions.Item>
-              
-              <Descriptions.Item label="Brand">
-                {product.brand}
-              </Descriptions.Item>
-              
-              <Descriptions.Item label="Category">
-                <Tag color="blue">{product.category}</Tag>
-              </Descriptions.Item>
-              
-              <Descriptions.Item label="Description">
-                {product.description}
-              </Descriptions.Item>
-            </Descriptions>
-          </Card>
-        </Col>
-      </Row>
+        {/* Carousel */}
+        <div style={{ borderRadius: 20, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', alignSelf: 'start' }}>
+          <Carousel autoplay arrows infinite>
+            {allImages.map((img, i) => (
+              <div key={i}>
+                <img
+                  src={img}
+                  alt={`${product.title} ${i + 1}`}
+                  style={{ width: '100%', height: 360, objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+            ))}
+          </Carousel>
+        </div>
 
-      <Row gutter={[24, 24]} className="mt-6">
-        <Col span={24}>
-          <Card title="Additional Information">
-            <Row gutter={[16, 16]}>
-              <Col xs={24} sm={8}>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{product.stock}</div>
-                  <div className="text-gray-600">Units in Stock</div>
-                </div>
-              </Col>
-              <Col xs={24} sm={8}>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{formatPrice(product.price)}</div>
-                  <div className="text-gray-600">Current Price</div>
-                </div>
-              </Col>
-              <Col xs={24} sm={8}>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">{product.rating}</div>
-                  <div className="text-gray-600">Average Rating</div>
-                </div>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
+        {/* Details */}
+        <div style={{ paddingTop: 8 }}>
+          <ProductInfo product={product} />
+        </div>
+      </div>
+
+      {/* Edit Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <EditOutlined style={{ color: '#6366f1', flexShrink: 0 }} />
+            <span style={{
+              fontWeight: 700,
+              color: '#0f172a',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              Edit Product
+            </span>
+          </div>
+        }
+        placement="right"
+        width={520}
+        open={drawerOpen}
+        onClose={() => { setDrawerOpen(false); form.resetFields(); }}
+        extra={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button icon={<CloseOutlined />} onClick={() => { setDrawerOpen(false); form.resetFields(); }}>
+              Cancel
+            </Button>
+            <Button type="primary" icon={<SaveOutlined />} onClick={() => form.submit()}>
+              Save Changes
+            </Button>
+          </div>
+        }
+      >
+        <EditProductForm
+          form={form}
+          onFinish={handleEditSubmit}
+          existingImages={product.images ?? []}
+        />
+      </Drawer>
     </div>
   );
 };

@@ -1,75 +1,88 @@
-import React from 'react';
-import { Card, Table, Button, Input, Select, Space, Tag, Rate } from 'antd';
-import { SearchOutlined, EyeOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
+import React, { useState, useRef } from 'react';
+import { Table, Button, Input, Tag, Rate, Drawer, Form, Select } from 'antd';
+import { ReloadOutlined, EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import { useProductsList, useCategories } from '../hooks/useProducts';
-import { formatCategoryName, formatPrice, getStockColor } from '../utils/formatters';
+import { formatPrice, getStockColor, formatCategoryName } from '../utils/formatters';
 import type { Product } from '../store/slices/productsSlice';
+import PageBreadcrumb from '../components/PageBreadcrumb';
+import EditProductForm from '../components/EditProductForm';
+import TableSkeleton from '../components/TableSkeleton';
 
 const { Search } = Input;
-const { Option } = Select;
 
 const ProductsPage: React.FC = () => {
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [form] = Form.useForm();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Use RTK Query hooks
   const {
-    products,
-    total,
-    currentPage,
-    pageSize,
-    isLoading,
-    isFetching,
-    searchQuery,
-    selectedCategory,
-    updateSearch,
-    updateCategory,
-    updatePagination,
-    clearFilters,
-    refetch,
+    products, total, currentPage, pageSize,
+    isLoading, isFetching, searchQuery, selectedCategory,
+    updateSearch, updateCategory, updatePagination, clearFilters, refetch,
   } = useProductsList();
 
-  const { categories } = useCategories();
+  const { categoryOptions, isLoading: categoriesLoading } = useCategories();
 
-  const handleSearch = (value: string) => {
-    updateSearch(value);
+  const openEditDrawer = (record: Product) => {
+    setEditingProduct(record);
+    form.setFieldsValue({
+      title: record.title,
+      brand: record.brand,
+      category: record.category,
+      description: record.description,
+      price: record.price,
+      stock: record.stock,
+      discountPercentage: record.discountPercentage,
+    });
+    setDrawerOpen(true);
   };
 
-  const handleCategoryChange = (value: string | undefined) => {
-    updateCategory(value);
-  };
-
-  const handleTableChange = (page: number, size: number) => {
-    updatePagination(page, size);
-  };
-
-  const handleRefresh = () => {
-    refetch();
+  const handleEditSubmit = (values: any) => {
+    console.log('Edited product:', { id: editingProduct?.id, ...values });
+    setDrawerOpen(false);
+    form.resetFields();
+    setEditingProduct(null);
   };
 
   const columns: ColumnsType<Product> = [
     {
-      title: 'Product',
+      title: 'Image',
+      dataIndex: 'thumbnail',
+      key: 'thumbnail',
+      width: 70,
+      render: (thumbnail: string, record: Product) => (
+        <img src={thumbnail} alt={record.title} className="product-thumb" />
+      ),
+    },
+    {
+      title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      render: (text: string, record: Product) => (
-        <Space>
-          <img
-            src={record.thumbnail}
-            alt={text}
-            className="w-12 h-12 object-cover rounded"
-          />
-          <span className="font-medium">{text}</span>
-        </Space>
+      render: (text: string) => (
+        <span className="font-semibold text-slate-800 text-sm">{text}</span>
+      ),
+    },
+    {
+      title: 'Brand',
+      dataIndex: 'brand',
+      key: 'brand',
+      width: 130,
+      render: (brand: string) => (
+        <span className="text-sm text-slate-500">{brand}</span>
       ),
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
+      width: 110,
       render: (price: number) => (
-        <span className="font-semibold text-green-600">{formatPrice(price)}</span>
+        <span className="font-bold text-slate-800">{formatPrice(price)}</span>
       ),
       sorter: (a, b) => a.price - b.price,
     },
@@ -77,11 +90,12 @@ const ProductsPage: React.FC = () => {
       title: 'Rating',
       dataIndex: 'rating',
       key: 'rating',
+      width: 160,
       render: (rating: number) => (
-        <Space>
-          <Rate disabled defaultValue={rating} allowHalf />
-          <span>({rating})</span>
-        </Space>
+        <div className="flex items-center gap-2">
+          <Rate disabled value={rating} allowHalf style={{ fontSize: 12 }} />
+          <span className="text-xs text-slate-400 font-semibold">{rating}</span>
+        </div>
       ),
       sorter: (a, b) => a.rating - b.rating,
     },
@@ -89,10 +103,9 @@ const ProductsPage: React.FC = () => {
       title: 'Stock',
       dataIndex: 'stock',
       key: 'stock',
+      width: 90,
       render: (stock: number) => (
-        <Tag color={getStockColor(stock)}>
-          {stock} units
-        </Tag>
+        <Tag color={getStockColor(stock)} className="font-semibold">{stock}</Tag>
       ),
       sorter: (a, b) => a.stock - b.stock,
     },
@@ -100,97 +113,159 @@ const ProductsPage: React.FC = () => {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
+      width: 150,
       render: (category: string) => (
-        <Tag color="blue">{category}</Tag>
+        <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+          {formatCategoryName(category)}
+        </span>
       ),
     },
     {
       title: 'Actions',
       key: 'actions',
+      width: 140,
       render: (_, record: Product) => (
-        <Button
-          type="primary"
-          icon={<EyeOutlined />}
-          size="small"
-          onClick={() => navigate(`/products/${record.id}`)}
-        >
-          View
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => openEditDrawer(record)}
+            style={{ color: '#6366f1', fontWeight: 600 }}
+          >
+            Edit
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => navigate(`/products/${record.id}`)}
+            style={{ color: '#94a3b8', fontWeight: 600, padding: 0 }}
+          >
+            View →
+          </Button>
+        </div>
       ),
     },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">Products</h1>
-          <p className="text-gray-600">Manage your product inventory and view all products</p>
-        </div>
-        
-        <Space wrap>
+    <div className="space-y-10">
+      <PageBreadcrumb items={[{ title: 'Products' }]} />
+
+      {/* Page Title */}
+      <div className="py-2">
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Products</h1>
+        <p className="text-base text-slate-500 mt-1">{total} items in your catalog</p>
+      </div>
+
+      {/* Toolbar */}
+      <div className="toolbar">
+        <div className="toolbar-left">
           <Search
             placeholder="Search products..."
             allowClear
-            enterButton={<SearchOutlined />}
+            style={{ width: 260 }}
             size="large"
-            style={{ width: 300 }}
-            value={searchQuery}
-            onSearch={handleSearch}
-            onChange={(e) => !e.target.value && handleSearch('')}
+            value={searchInput}
+            onSearch={(val) => {
+              updateSearch(val);
+            }}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchInput(val);
+              if (debounceRef.current) clearTimeout(debounceRef.current);
+              if (!val) {
+                updateSearch('');
+              } else if (val.length >= 3) {
+                debounceRef.current = setTimeout(() => updateSearch(val), 400);
+              }
+            }}
             loading={isFetching}
           />
           <Select
-            placeholder="Filter by category"
-            style={{ width: 180 }}
-            size="large"
+            placeholder="All Categories"
             allowClear
-            suffixIcon={<FilterOutlined />}
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            {categories.map((category) => (
-              <Option key={category} value={category}>
-                {formatCategoryName(category)}
-              </Option>
-            ))}
-          </Select>
-          <Button
-            icon={<ReloadOutlined />}
-            onClick={handleRefresh}
-            loading={isFetching}
             size="large"
-          >
+            style={{ width: 200 }}
+            loading={categoriesLoading}
+            value={selectedCategory ?? undefined}
+            onChange={(val) => updateCategory(val ?? undefined)}
+            options={categoryOptions.map((c) => ({ value: c.slug, label: c.name }))}
+          />
+          {(searchQuery || selectedCategory) && (
+            <Button size="large" type="text" onClick={() => { clearFilters(); setSearchInput(''); }}>Clear</Button>
+          )}
+        </div>
+        <div className="toolbar-right">
+          <Button icon={<ReloadOutlined />} onClick={refetch} loading={isFetching} size="large">
             Refresh
           </Button>
-          {(searchQuery || selectedCategory) && (
-            <Button onClick={clearFilters} size="large">
-              Clear Filters
-            </Button>
-          )}
-        </Space>
+        </div>
       </div>
 
-      <Card>
-        <Table
-          columns={columns}
-          dataSource={products}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: total,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} products`,
-            onChange: handleTableChange,
-            onShowSizeChange: handleTableChange,
-          }}
-          scroll={{ x: 800 }}
+      {/* Table */}
+      <div className="table-wrapper bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        {isLoading || isFetching ? (
+          <TableSkeleton rows={pageSize} />
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={products}
+            rowKey="id"
+            loading={false}
+            pagination={{
+              current: currentPage,
+              pageSize,
+              total,
+              showSizeChanger: true,
+              showTotal: (t, r) => `${r[0]}–${r[1]} of ${t}`,
+              onChange: updatePagination,
+              onShowSizeChange: updatePagination,
+              style: { padding: '16px 24px', margin: 0 },
+            }}
+            scroll={{ x: 800 }}
+            size="large"
+          />
+        )}
+      </div>
+
+      {/* Edit Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+            <EditOutlined style={{ color: '#6366f1', flexShrink: 0 }} />
+            <span style={{
+              fontWeight: 700,
+              color: '#0f172a',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              Edit Product
+            </span>
+          </div>
+        }
+        placement="right"
+        width={520}
+        open={drawerOpen}
+        onClose={() => { setDrawerOpen(false); form.resetFields(); }}
+        extra={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button icon={<CloseOutlined />} onClick={() => { setDrawerOpen(false); form.resetFields(); }}>
+              Cancel
+            </Button>
+            <Button type="primary" icon={<SaveOutlined />} onClick={() => form.submit()}>
+              Save Changes
+            </Button>
+          </div>
+        }
+      >
+        <EditProductForm
+          form={form}
+          onFinish={handleEditSubmit}
+          existingImages={editingProduct?.images ?? []}
         />
-      </Card>
+      </Drawer>
     </div>
   );
 };

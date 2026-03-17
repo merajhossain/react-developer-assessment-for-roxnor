@@ -70,7 +70,7 @@ export const productsApi = createApi({
     }),
 
     // Get all categories
-    getCategories: builder.query<string[], void>({
+    getCategories: builder.query<{ slug: string; name: string; url: string }[], void>({
       query: () => 'products/categories',
       providesTags: [{ type: 'Category', id: 'LIST' }],
     }),

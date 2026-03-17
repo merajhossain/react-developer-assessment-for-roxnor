@@ -72,7 +72,6 @@ The goal is not to complete every requirement, but to demonstrate:
 
   * Loading states
   * Error states
-* ❌ No backend update required (frontend only)
 
 ---
 
