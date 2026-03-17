@@ -3,6 +3,7 @@ import { Card, Button, Row, Col, Tag, Rate, Image, Descriptions, Space, Spin, Mo
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProduct, useDeleteProduct } from '../hooks/useProducts';
+import { formatPrice, getStockColor, getStockStatus } from '../utils/formatters';
 
 const { confirm } = Modal;
 
@@ -11,18 +12,6 @@ const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { product, isLoading, error } = useProduct(id ? parseInt(id) : undefined);
   const { deleteProduct, isLoading: isDeleting } = useDeleteProduct();
-
-  const getStockColor = (stock: number) => {
-    if (stock > 50) return 'green';
-    if (stock > 20) return 'orange';
-    return 'red';
-  };
-
-  const getStockStatus = (stock: number) => {
-    if (stock > 50) return 'In Stock';
-    if (stock > 20) return 'Low Stock';
-    return 'Out of Stock';
-  };
 
   const handleDelete = () => {
     if (!product) return;
@@ -142,7 +131,7 @@ const ProductDetailPage: React.FC = () => {
             <Descriptions column={1} bordered>
               <Descriptions.Item label="Price">
                 <span className="text-2xl font-bold text-green-600">
-                  ${product.price}
+                  {formatPrice(product.price)}
                 </span>
                 {product.discountPercentage > 0 && (
                   <Tag color="red" className="ml-2">
@@ -192,7 +181,7 @@ const ProductDetailPage: React.FC = () => {
               </Col>
               <Col xs={24} sm={8}>
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">${product.price}</div>
+                  <div className="text-2xl font-bold text-green-600">{formatPrice(product.price)}</div>
                   <div className="text-gray-600">Current Price</div>
                 </div>
               </Col>

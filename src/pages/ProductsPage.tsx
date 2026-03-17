@@ -4,6 +4,7 @@ import { SearchOutlined, EyeOutlined, FilterOutlined, ReloadOutlined } from '@an
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
 import { useProductsList, useCategories } from '../hooks/useProducts';
+import { formatCategoryName, formatPrice, getStockColor } from '../utils/formatters';
 import type { Product } from '../store/slices/productsSlice';
 
 const { Search } = Input;
@@ -68,7 +69,7 @@ const ProductsPage: React.FC = () => {
       dataIndex: 'price',
       key: 'price',
       render: (price: number) => (
-        <span className="font-semibold text-green-600">${price}</span>
+        <span className="font-semibold text-green-600">{formatPrice(price)}</span>
       ),
       sorter: (a, b) => a.price - b.price,
     },
@@ -89,7 +90,7 @@ const ProductsPage: React.FC = () => {
       dataIndex: 'stock',
       key: 'stock',
       render: (stock: number) => (
-        <Tag color={stock > 50 ? 'green' : stock > 20 ? 'orange' : 'red'}>
+        <Tag color={getStockColor(stock)}>
           {stock} units
         </Tag>
       ),
@@ -150,7 +151,7 @@ const ProductsPage: React.FC = () => {
           >
             {categories.map((category) => (
               <Option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}
+                {formatCategoryName(category)}
               </Option>
             ))}
           </Select>

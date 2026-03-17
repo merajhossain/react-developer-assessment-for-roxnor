@@ -111,8 +111,13 @@ export const useCategories = () => {
     }
   }, [error]);
 
+  // Ensure categories are strings
+  const validCategories = categories.filter((cat): cat is string => 
+    typeof cat === 'string' && cat.length > 0
+  );
+
   return {
-    categories,
+    categories: validCategories,
     isLoading,
     error,
   };

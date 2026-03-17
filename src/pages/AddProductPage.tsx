@@ -4,6 +4,7 @@ import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { UploadProps } from 'antd';
 import { useAddProduct, useCategories } from '../hooks/useProducts';
+import { formatCategoryName } from '../utils/formatters';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -85,7 +86,7 @@ const AddProductPage: React.FC = () => {
                 <Select placeholder="Select category" size="large">
                   {categories.map((category) => (
                     <Option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}
+                      {formatCategoryName(category)}
                     </Option>
                   ))}
                 </Select>
