@@ -1,10 +1,8 @@
 import React from "react";
 import { Card, Rate, Tag, Button } from "antd";
-import { EyeOutlined, EditOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { formatCategoryName, getStockColor } from "../utils/formatters";
-
-const { Meta } = Card;
 
 interface ProductCardProps {
   id: number;
@@ -18,14 +16,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
-  id,
-  title,
-  price,
-  rating,
-  stock,
-  category,
-  thumbnail,
-  description,
+  id, title, price, rating, stock, category, thumbnail, description,
 }) => {
   const navigate = useNavigate();
 
@@ -46,19 +37,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Tag>
           </div>
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-             <Button 
-                shape="circle" 
-                icon={<EyeOutlined />} 
-                size="large"
-                className="hover:scale-110 transition-transform bg-white/20 backdrop-blur-md border-none text-white shadow-xl"
-                onClick={() => navigate(`/products/${id}`)}
-              />
-              <Button 
-                shape="circle" 
-                icon={<ShoppingCartOutlined />} 
-                size="large"
-                className="hover:scale-110 transition-transform bg-white text-blue-600 border-none shadow-xl"
-              />
+            <Button
+              shape="circle"
+              icon={<EyeOutlined />}
+              size="large"
+              className="hover:scale-110 transition-transform bg-white/20 backdrop-blur-md border-none text-white shadow-xl"
+              onClick={() => navigate(`/products/${id}`)}
+            />
+            <Button
+              shape="circle"
+              icon={<ShoppingCartOutlined />}
+              size="large"
+              className="hover:scale-110 transition-transform bg-white text-blue-600 border-none shadow-xl"
+            />
           </div>
         </div>
       }
@@ -71,21 +62,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </h3>
           </div>
           <div className="flex items-center gap-2">
-            <Rate disabled defaultValue={rating} allowHalf size="small" style={{ fontSize: 10 }} />
+            <Rate disabled defaultValue={rating} allowHalf style={{ fontSize: 10 }} />
             <span className="text-[10px] font-bold text-gray-400">({rating})</span>
           </div>
         </div>
-
         <div className="flex items-center justify-between pt-2">
-           <div className="text-2xl font-black text-gray-900">
-             <span className="text-sm font-bold text-gray-400 mr-1">$</span>
-             {price.toLocaleString()}
-           </div>
-           <Tag color={getStockColor(stock)} className="m-0 border-none font-black text-[10px] uppercase rounded-full px-3 py-0.5">
-              {stock} In Stock
-           </Tag>
+          <div className="text-2xl font-black text-gray-900">
+            <span className="text-sm font-bold text-gray-400 mr-1">$</span>
+            {price.toLocaleString()}
+          </div>
+          <Tag color={getStockColor(stock)} className="m-0 border-none font-black text-[10px] uppercase rounded-full px-3 py-0.5">
+            {stock} In Stock
+          </Tag>
         </div>
-
         <p className="text-sm text-gray-500 line-clamp-2 h-10 leading-relaxed font-medium">
           {description || 'Comprehensive specifications for this premium inventory listing.'}
         </p>
