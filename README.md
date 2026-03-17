@@ -1,190 +1,145 @@
-# 🛍️ Product Management Dashboard
+# Product Management Dashboard
 
-## 📌 Overview
+## Overview
 
-This project is a frontend assessment application built with **React + TypeScript**, focusing on product management features using a public API.
-
-The goal is not to complete every requirement, but to demonstrate:
-
-* Strong project architecture
-* Clean and maintainable code
-* Proper TypeScript usage
-* Efficient state management
-* Robust error handling
-* Good UI/UX practices
+A frontend assessment application built with React + TypeScript, demonstrating product management features against the DummyJSON public API.
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
-* **Frontend Framework:** React (with TypeScript)
-
-* **State Management:** Redux Toolkit / Zustand
-
-* **Data Fetching:** RTK Query / TanStack Query
-
-* **UI Library:** Ant Design
-
-* **Styling:**
-
-  * Tailwind CSS
-  * SCSS / Styled Components (at least two used)
-
-* **API Source:** DummyJSON
-  [https://dummyjson.com/docs/](https://dummyjson.com/docs/)
+- React 19 + TypeScript
+- Redux Toolkit + RTK Query (state management & data fetching)
+- Ant Design (UI components)
+- Tailwind CSS + SCSS (styling — two approaches as required)
+- Vite (build tool)
 
 ---
 
-## 📂 Features
+## Features
 
-### ✅ Task 1 — Product Management
+### Task 1 — Product List (`/products`)
 
-* 📊 Product list displayed using **Ant Design Table**
-* 🔄 Data fetched from `/products` API
-* 📄 Pagination support
-* 🔍 Product search using `/products/search?q=keyword`
-* 🗂️ Category filtering via dropdown (`/products/categories`)
-* 📌 Table columns:
+- Ant Design Table with server-side pagination (skip/limit)
+- Data fetched from `/products` via RTK Query
+- Search via `/products/search?q=keyword` — auto-triggers after 3 characters with 400ms debounce, also fires on Enter
+- Category filter dropdown — fetched from `/products/categories`, filters by category slug
+- Table columns: Image, Title, Brand, Price, Rating, Stock, Category, Actions
+- Actions column: Edit button (opens drawer) + View button (navigates to `/products/:id`)
+- Skeleton loader (`TableSkeleton`) shown on initial load, search, filter, and page changes
+- Edit drawer uses reusable `EditProductForm` component with full validation
 
-  * Title
-  * Price
-  * Rating
-  * Stock
-  * Category
-* 👁️ View button to navigate to product details page
+### Task 2 — Product Details (`/products/:id`)
 
----
+- Dynamic routing via React Router `/products/:id`
+- Product images displayed in an Ant Design `Carousel` (autoplay + arrows)
+- Displays: title, description, price (with discount), rating (star component), stock, brand, category
+- Edit button opens a right-side Drawer with `EditProductForm` pre-filled with existing product data including images
+- Loading state: `ProductDetailSkeleton` component matching the page layout
+- Error state: Ant Design `Alert` with back navigation button
 
-### ✅ Task 2 — Product Details & Form
+### Form Validation (`EditProductForm`)
 
-* 📍 Dynamic routing: `/products/:id`
-* 🖼️ Display product details:
-
-  * Images
-  * Title
-  * Description
-  * Price
-  * Rating
-  * Stock
-* ✏️ Edit button opens a **Drawer form**
-* ✅ Form validation with custom rules
-* ⚠️ Proper handling of:
-
-  * Loading states
-  * Error states
+- Title: required, no whitespace, min 3 / max 100 chars, must contain letters
+- Brand: required, no whitespace, min 2 / max 50 chars
+- Category: required select
+- Description: required, min 20 / max 500 chars
+- Price: required, valid number, $0.01–$99,999
+- Stock: required, whole integer, 0–10,000
+- Discount: optional, 0–90%, max 2 decimal places
+- Images: file type (images only) and 5MB size limit enforced in `beforeUpload`
+- `scrollToFirstError` enabled — jumps to first invalid field on submit
 
 ---
 
-## 🧠 Key Engineering Focus
-
-This project emphasizes:
-
-* 📦 Scalable folder structure
-* 🔐 Type-safe API handling
-* 🔄 Efficient state management
-* ⚡ Optimized data fetching & caching
-* 🧩 Reusable components
-* 🛡️ Error handling & fallback UI
-* 🎯 Clean and readable code
-
----
-
-## 📁 Project Structure (Example)
+## Project Structure
 
 ```
 src/
-│── app/                # Store setup
-│── features/           # Redux slices / Zustand stores
-│── services/           # API services (RTK Query / React Query)
-│── components/         # Reusable UI components
-│── pages/              # Page-level components
-│── routes/             # Routing configuration
-│── styles/             # Global & modular styles
-│── types/              # TypeScript types
+├── components/
+│   ├── Layout/             # Header, Footer, MainLayout
+│   ├── EditProductForm.tsx # Reusable edit form with validation
+│   ├── ProductInfo.tsx     # Product detail right-panel component
+│   ├── PageBreadcrumb.tsx  # Breadcrumb used across all pages
+│   ├── TableSkeleton.tsx   # Skeleton for product table
+│   └── ProductDetailSkeleton.tsx
+├── pages/
+│   ├── ProductsPage.tsx
+│   ├── ProductDetailPage.tsx
+│   ├── AddProductPage.tsx
+│   └── NotFoundPage.tsx
+├── store/
+│   ├── api/productsApi.ts  # RTK Query API slice
+│   ├── slices/             # Redux slices
+│   └── index.ts
+├── hooks/
+│   └── useProducts.ts      # Custom hooks wrapping RTK Query
+├── utils/
+│   └── formatters.ts       # Price, stock, category formatters
+└── styles/
+    ├── main.scss
+    ├── _variables.scss     # CSS custom properties
+    ├── _antd-overrides.scss
+    ├── _components.scss
+    ├── _layout.scss
+    └── _utilities.scss
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
-### 1️⃣ Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/your-username/product-dashboard.git
 cd product-dashboard
 ```
 
-### 2️⃣ Install dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3️⃣ Environment Setup
+### 3. Environment setup
 
-1. Copy the example environment file:
-   ```bash
-   cp example.env .env
-   ```
+```bash
+cp example.env .env
+```
 
-2. Update the `.env` file with your configuration:
-   - `VITE_API_URL`: API base URL (default: https://dummyjson.com/)
+The `.env` file requires:
 
-The `.env` file is ignored by git for security, while `example.env` is tracked to show the required environment variables.
+```
+VITE_API_URL=https://dummyjson.com/
+```
 
-### 4️⃣ Run the development server
+### 4. Run the development server
 
 ```bash
 npm run dev
 ```
 
-### 5️⃣ Open in browser
-
-```
-http://localhost:5173
-```
+Open `http://localhost:5173`
 
 ---
 
-## 🌐 API Endpoints Used
+## API Endpoints Used
 
-* Get Products:
-  `GET /products`
-
-* Search Products:
-  `GET /products/search?q=keyword`
-
-* Product Details:
-  `GET /products/{id}`
-
-* Categories:
-  `GET /products/categories`
+| Endpoint | Usage |
+|---|---|
+| `GET /products` | Product list with pagination |
+| `GET /products/search?q=keyword` | Search products |
+| `GET /products/:id` | Product detail |
+| `GET /products/categories` | Category dropdown |
+| `GET /products/category/:slug` | Filter by category |
 
 ---
 
-## 🧪 Validation & Error Handling
+## Engineering Notes
 
-* Custom form validation rules implemented
-* API error handling with user-friendly messages
-* Loading indicators for async operations
-* Graceful UI fallback for failed requests
-
----
-
-## 📌 Notes
-
-* This is a **frontend-only implementation**
-* No data persistence is required
-* Focus is on **code quality over completeness**
-
----
-
-## 🙌 Conclusion
-
-This project demonstrates practical frontend engineering skills including:
-
-* Component design
-* API integration
-* State management
-* UI development with Ant Design
-* Clean and scalable architecture
+- All API calls abstracted behind custom hooks — pages never call RTK Query directly
+- Categories API returns `{slug, name, url}` objects — handled correctly throughout (not assumed to be strings)
+- `EditProductForm` is a shared component used in both the product list page and the detail page
+- No data persistence — frontend only as per spec
+- Reusable skeleton components match actual page layouts for a smooth loading experience
