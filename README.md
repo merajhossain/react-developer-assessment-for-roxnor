@@ -1,19 +1,3 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-## Environment Setup
-
-1. Copy the example environment file:
-   ```bash
-   cp example.env .env
-   ```
-
-2. Update the `.env` file with your configuration:
-   - `VITE_API_URL`: API base URL (default: https://dummyjson.com/)
-
-The `.env` file is ignored by git for security, while `example.env` is tracked to show the required environment variables.
-
 # 🛍️ Product Management Dashboard
 
 ## 📌 Overview
@@ -137,13 +121,25 @@ cd product-dashboard
 npm install
 ```
 
-### 3️⃣ Run the development server
+### 3️⃣ Environment Setup
+
+1. Copy the example environment file:
+   ```bash
+   cp example.env .env
+   ```
+
+2. Update the `.env` file with your configuration:
+   - `VITE_API_URL`: API base URL (default: https://dummyjson.com/)
+
+The `.env` file is ignored by git for security, while `example.env` is tracked to show the required environment variables.
+
+### 4️⃣ Run the development server
 
 ```bash
 npm run dev
 ```
 
-### 4️⃣ Open in browser
+### 5️⃣ Open in browser
 
 ```
 http://localhost:5173
