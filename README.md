@@ -1,179 +1,85 @@
-# 🛍️ Product Management Dashboard
+# React + TypeScript + Vite
 
-## 📌 Overview
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-This project is a frontend assessment application built with **React + TypeScript**, focusing on product management features using a public API.
+## Environment Setup
 
-The goal is not to complete every requirement, but to demonstrate:
+1. Copy the example environment file:
+   ```bash
+   cp example.env .env
+   ```
 
-* Strong project architecture
-* Clean and maintainable code
-* Proper TypeScript usage
-* Efficient state management
-* Robust error handling
-* Good UI/UX practices
+2. Update the `.env` file with your configuration:
+   - `VITE_API_URL`: API base URL (default: https://dummyjson.com/)
 
----
+The `.env` file is ignored by git for security, while `example.env` is tracked to show the required environment variables.
 
-## 🚀 Tech Stack
+Currently, two official plugins are available:
 
-* **Frontend Framework:** React (with TypeScript)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-* **State Management:** Redux Toolkit / Zustand
+## React Compiler
 
-* **Data Fetching:** RTK Query / TanStack Query
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-* **UI Library:** Ant Design
+## Expanding the ESLint configuration
 
-* **Styling:**
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-  * Tailwind CSS
-  * SCSS / Styled Components (at least two used)
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-* **API Source:** DummyJSON
-  [https://dummyjson.com/docs/](https://dummyjson.com/docs/)
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
----
-
-## 📂 Features
-
-### ✅ Task 1 — Product Management
-
-* 📊 Product list displayed using **Ant Design Table**
-* 🔄 Data fetched from `/products` API
-* 📄 Pagination support
-* 🔍 Product search using `/products/search?q=keyword`
-* 🗂️ Category filtering via dropdown (`/products/categories`)
-* 📌 Table columns:
-
-  * Title
-  * Price
-  * Rating
-  * Stock
-  * Category
-* 👁️ View button to navigate to product details page
-
----
-
-### ✅ Task 2 — Product Details & Form
-
-* 📍 Dynamic routing: `/products/:id`
-* 🖼️ Display product details:
-
-  * Images
-  * Title
-  * Description
-  * Price
-  * Rating
-  * Stock
-* ✏️ Edit button opens a **Drawer form**
-* ✅ Form validation with custom rules
-* ⚠️ Proper handling of:
-
-  * Loading states
-  * Error states
-* ❌ No backend update required (frontend only)
-
----
-
-## 🧠 Key Engineering Focus
-
-This project emphasizes:
-
-* 📦 Scalable folder structure
-* 🔐 Type-safe API handling
-* 🔄 Efficient state management
-* ⚡ Optimized data fetching & caching
-* 🧩 Reusable components
-* 🛡️ Error handling & fallback UI
-* 🎯 Clean and readable code
-
----
-
-## 📁 Project Structure (Example)
-
-```
-src/
-│── app/                # Store setup
-│── features/           # Redux slices / Zustand stores
-│── services/           # API services (RTK Query / React Query)
-│── components/         # Reusable UI components
-│── pages/              # Page-level components
-│── routes/             # Routing configuration
-│── styles/             # Global & modular styles
-│── types/              # TypeScript types
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
----
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## ⚙️ Installation & Setup
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-### 1️⃣ Clone the repository
-
-```bash
-git clone https://github.com/your-username/product-dashboard.git
-cd product-dashboard
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-### 2️⃣ Install dependencies
-
-```bash
-npm install
-```
-
-### 3️⃣ Run the development server
-
-```bash
-npm run dev
-```
-
-### 4️⃣ Open in browser
-
-```
-http://localhost:5173
-```
-
----
-
-## 🌐 API Endpoints Used
-
-* Get Products:
-  `GET /products`
-
-* Search Products:
-  `GET /products/search?q=keyword`
-
-* Product Details:
-  `GET /products/{id}`
-
-* Categories:
-  `GET /products/categories`
-
----
-
-## 🧪 Validation & Error Handling
-
-* Custom form validation rules implemented
-* API error handling with user-friendly messages
-* Loading indicators for async operations
-* Graceful UI fallback for failed requests
-
----
-
-## 📌 Notes
-
-* This is a **frontend-only implementation**
-* No data persistence is required
-* Focus is on **code quality over completeness**
-
----
-
-## 🙌 Conclusion
-
-This project demonstrates practical frontend engineering skills including:
-
-* Component design
-* API integration
-* State management
-* UI development with Ant Design
-* Clean and scalable architecture
