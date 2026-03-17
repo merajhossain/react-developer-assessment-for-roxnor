@@ -1,0 +1,132 @@
+// Ant Design customizations and overrides
+
+// Website-style layout customizations
+.ant-layout {
+  background: #fff;
+}
+
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
+  padding: 0 24px;
+  
+  .ant-menu {
+    &.ant-menu-horizontal {
+      border-bottom: none;
+      background: transparent;
+      
+      .ant-menu-item {
+        border-radius: 6px;
+        margin: 0 8px;
+        
+        &:hover {
+          background-color: rgba(24, 144, 255, 0.1);
+          color: #1890ff;
+        }
+        
+        &.ant-menu-item-selected {
+          background-color: rgba(24, 144, 255, 0.15);
+          color: #1890ff;
+          
+          &::after {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  .ant-card-head {
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+.ant-table {
+  .ant-table-thead > tr > th {
+    background-color: #fafafa;
+    font-weight: 600;
+  }
+  
+  .ant-table-tbody > tr:hover > td {
+    background-color: rgba(24, 144, 255, 0.05);
+  }
+}
+
+.ant-btn {
+  border-radius: 6px;
+  
+  &.ant-btn-primary {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    border: none;
+    
+    &:hover {
+      background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+    }
+  }
+}
+
+.ant-input,
+.ant-input-number {
+  border-radius: 6px;
+}
+
+.ant-select {
+  .ant-select-selector {
+    border-radius: 6px;
+  }
+}
+
+// Form styling
+.ant-form {
+  .ant-form-item-label > label {
+    font-weight: 500;
+    color: #262626;
+  }
+}
+
+// Upload component styling
+.ant-upload-list-picture-card {
+  .ant-upload-list-item {
+    border-radius: 6px;
+  }
+}
+
+.ant-upload-select {
+  border-radius: 6px;
+  border: 2px dashed #d9d9d9;
+  
+  &:hover {
+    border-color: #1890ff;
+  }
+}
+
+// Custom utility classes for Ant Design components
+.ant-statistic {
+  .ant-statistic-content {
+    font-size: 24px;
+    font-weight: 600;
+  }
+}
+
+// Responsive adjustments for website layout
+@media (max-width: 768px) {
+  .ant-layout-header {
+    padding: 0 16px;
+    
+    .ant-menu-horizontal {
+      .ant-menu-item {
+        margin: 0 4px;
+        padding: 0 8px;
+      }
+    }
+  }
+  
+  .ant-layout-content {
+    padding: 16px;
+  }
+}
