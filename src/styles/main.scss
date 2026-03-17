@@ -1,0 +1,11 @@
+// Import other SCSS files using modern @use syntax
+@use 'variables';
+@use 'base';
+@use 'components';
+@use 'layout';
+@use 'utilities';
+
+// Tailwind CSS imports
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

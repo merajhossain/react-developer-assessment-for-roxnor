@@ -1,0 +1,58 @@
+// SCSS Utilities and Mixins
+@use 'sass:color';
+
+// Mixins
+@mixin button-style($bg-color: #007bff, $text-color: white) {
+  background-color: $bg-color;
+  color: $text-color;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: color.adjust($bg-color, $lightness: -10%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Variables for common colors
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$warning-color: #ffc107;
+
+// Utility classes
+.btn-primary {
+  @include button-style($primary-color);
+}
+
+.btn-secondary {
+  @include button-style($secondary-color);
+}
+
+.btn-success {
+  @include button-style($success-color);
+}
+
+// Responsive breakpoints
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px
+);
+
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+}
