@@ -238,6 +238,7 @@ const ProductsPage: React.FC = () => {
           </div>
         }
         placement="right"
+        width={520}
         open={drawerOpen}
         onClose={() => { setDrawerOpen(false); form.resetFields(); }}
         extra={

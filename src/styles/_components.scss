@@ -135,6 +135,45 @@
   gap: 8px;
 }
 
+// ─── Drawer Responsive ────────────────────────────────────────────────────────
+.ant-drawer {
+  // Full-width drawer on mobile
+  @media (max-width: 600px) {
+    .ant-drawer-content-wrapper {
+      width: 100% !important;
+    }
+
+    // Stack header title + extra buttons vertically
+    .ant-drawer-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .ant-drawer-header-title {
+      width: 100%;
+    }
+
+    .ant-drawer-extra {
+      width: 100%;
+
+      .drawer-actions {
+        width: 100%;
+
+        .ant-btn {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+    }
+
+    .ant-drawer-body {
+      padding: 16px;
+    }
+  }
+}
+
 // ─── Table Actions ────────────────────────────────────────────────────────────
 .table-actions {
   display: flex;

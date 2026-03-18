@@ -111,17 +111,9 @@ const ProductDetailPage: React.FC = () => {
       {/* Edit Drawer */}
       <Drawer
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <EditOutlined style={{ color: '#6366f1', flexShrink: 0 }} />
-            <span style={{
-              fontWeight: 700,
-              color: '#0f172a',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
-              Edit Product
-            </span>
+          <div className="drawer-title">
+            <EditOutlined className="drawer-title-icon" />
+            <span className="drawer-title-text">Edit Product</span>
           </div>
         }
         placement="right"
@@ -129,7 +121,7 @@ const ProductDetailPage: React.FC = () => {
         open={drawerOpen}
         onClose={() => { setDrawerOpen(false); form.resetFields(); }}
         extra={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="drawer-actions">
             <Button icon={<CloseOutlined />} onClick={() => { setDrawerOpen(false); form.resetFields(); }}>
               Cancel
             </Button>
