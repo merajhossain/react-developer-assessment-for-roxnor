@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Table, Button, Input, Tag, Rate, Drawer, Form, Select } from 'antd';
+import { Table, Button, Input, Tag, Rate, Drawer, Form, Select,Flex} from 'antd';
 import { ReloadOutlined, EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -159,49 +159,75 @@ const ProductsPage: React.FC = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="toolbar">
-        <div className="toolbar-left">
-          <Search
-            placeholder="Search products..."
-            allowClear
-            style={{ width: 260 }}
-            size="large"
-            value={searchInput}
-            onSearch={(val) => {
-              updateSearch(val);
-            }}
-            onChange={(e) => {
-              const val = e.target.value;
-              setSearchInput(val);
-              if (debounceRef.current) clearTimeout(debounceRef.current);
-              if (!val) {
-                updateSearch('');
-              } else if (val.length >= 3) {
-                debounceRef.current = setTimeout(() => updateSearch(val), 400);
-              }
-            }}
-            loading={isFetching}
-          />
-          <Select
-            placeholder="All Categories"
-            allowClear
-            size="large"
-            style={{ width: 200 }}
-            loading={categoriesLoading}
-            value={selectedCategory ?? undefined}
-            onChange={(val) => updateCategory(val ?? undefined)}
-            options={categoryOptions.map((c) => ({ value: c.slug, label: c.name }))}
-          />
-          {(searchQuery || selectedCategory) && (
-            <Button size="large" type="text" onClick={() => { clearFilters(); setSearchInput(''); }}>Clear</Button>
-          )}
-        </div>
-        <div className="toolbar-right">
-          <Button icon={<ReloadOutlined />} onClick={refetch} loading={isFetching} size="large">
-            Refresh
-          </Button>
-        </div>
-      </div>
+      import { Flex } from "antd";
+
+<div className="toolbar">
+  <Flex justify="space-between" align="center" wrap="wrap" gap="middle">
+    
+    {/* Left Section */}
+    <Flex wrap="wrap" gap="middle">
+      <Search
+        placeholder="Search products..."
+        allowClear
+        style={{ width: 260, maxWidth: "100%" }}
+        size="large"
+        value={searchInput}
+        onSearch={(val) => updateSearch(val)}
+        onChange={(e) => {
+          const val = e.target.value;
+          setSearchInput(val);
+          if (debounceRef.current) clearTimeout(debounceRef.current);
+          if (!val) {
+            updateSearch('');
+          } else if (val.length >= 3) {
+            debounceRef.current = setTimeout(() => updateSearch(val), 400);
+          }
+        }}
+        loading={isFetching}
+      />
+
+      <Select
+        placeholder="All Categories"
+        allowClear
+        size="large"
+        style={{ width: 200, maxWidth: "100%" }}
+        loading={categoriesLoading}
+        value={selectedCategory ?? undefined}
+        onChange={(val) => updateCategory(val ?? undefined)}
+        options={categoryOptions.map((c) => ({
+          value: c.slug,
+          label: c.name,
+        }))}
+      />
+
+      {(searchQuery || selectedCategory) && (
+        <Button
+          size="large"
+          type="text"
+          onClick={() => {
+            clearFilters();
+            setSearchInput('');
+          }}
+        >
+          Clear
+        </Button>
+      )}
+    </Flex>
+
+    {/* Right Section */}
+    <Flex>
+      <Button
+        icon={<ReloadOutlined />}
+        onClick={refetch}
+        loading={isFetching}
+        size="large"
+      >
+        Refresh
+      </Button>
+    </Flex>
+
+  </Flex>
+</div>
 
       {/* Table */}
       <div className="table-wrapper bg-white rounded-2xl overflow-hidden shadow-sm">
