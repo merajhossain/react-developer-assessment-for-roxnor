@@ -204,7 +204,7 @@ const ProductsPage: React.FC = () => {
       </div>
 
       {/* Table */}
-      <div className="table-wrapper bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+      <div className="table-wrapper bg-white rounded-2xl overflow-hidden shadow-sm">
         {isLoading || isFetching ? (
           <TableSkeleton rows={pageSize} />
         ) : (
