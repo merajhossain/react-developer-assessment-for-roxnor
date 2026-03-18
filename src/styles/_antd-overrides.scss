@@ -117,24 +117,91 @@
   background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 16px 24px;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px;
+  padding: 16px 20px;
   box-shadow: var(--shadow-sm);
+
+  .toolbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
 
   .toolbar-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+
+    .toolbar-search {
+      flex: 1 1 160px;
+      max-width: 260px;
+      min-width: 0;
+    }
+
+    .toolbar-category {
+      flex: 1 1 140px;
+      max-width: 200px;
+      min-width: 0;
+      width: 200px;
+    }
   }
 
   .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    padding: 14px 16px;
+
+    .toolbar-inner {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .toolbar-left {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+
+      .toolbar-search,
+      .toolbar-category {
+        max-width: 100%;
+        width: 100%;
+        flex: none;
+
+        // Target Ant Design inner wrappers
+        .ant-input-search,
+        .ant-input-affix-wrapper,
+        .ant-input-group-wrapper,
+        .ant-select,
+        .ant-select-selector {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+      }
+
+      // Clear button full width on mobile
+      .ant-btn-text {
+        width: 100%;
+      }
+    }
+
+    .toolbar-right {
+      width: 100%;
+
+      .ant-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
   }
 }
 

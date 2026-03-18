@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Table, Button, Input, Tag, Rate, Drawer, Form, Select,Flex} from 'antd';
+import { Table, Button, Input, Tag, Rate, Drawer, Form, Select } from 'antd';
 import { ReloadOutlined, EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -125,21 +125,21 @@ const ProductsPage: React.FC = () => {
       key: 'actions',
       width: 140,
       render: (_, record: Product) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' }}>
+        <div className="table-actions">
           <Button
             type="text"
             icon={<EditOutlined />}
             size="small"
+            className="action-edit"
             onClick={() => openEditDrawer(record)}
-            style={{ color: '#6366f1', fontWeight: 600 }}
           >
             Edit
           </Button>
           <Button
             type="link"
             size="small"
+            className="action-view"
             onClick={() => navigate(`/products/${record.id}`)}
-            style={{ color: '#94a3b8', fontWeight: 600, padding: 0 }}
           >
             View →
           </Button>
@@ -159,75 +159,49 @@ const ProductsPage: React.FC = () => {
       </div>
 
       {/* Toolbar */}
-      import { Flex } from "antd";
-
-<div className="toolbar">
-  <Flex justify="space-between" align="center" wrap="wrap" gap="middle">
-    
-    {/* Left Section */}
-    <Flex wrap="wrap" gap="middle">
-      <Search
-        placeholder="Search products..."
-        allowClear
-        style={{ width: 260, maxWidth: "100%" }}
-        size="large"
-        value={searchInput}
-        onSearch={(val) => updateSearch(val)}
-        onChange={(e) => {
-          const val = e.target.value;
-          setSearchInput(val);
-          if (debounceRef.current) clearTimeout(debounceRef.current);
-          if (!val) {
-            updateSearch('');
-          } else if (val.length >= 3) {
-            debounceRef.current = setTimeout(() => updateSearch(val), 400);
-          }
-        }}
-        loading={isFetching}
-      />
-
-      <Select
-        placeholder="All Categories"
-        allowClear
-        size="large"
-        style={{ width: 200, maxWidth: "100%" }}
-        loading={categoriesLoading}
-        value={selectedCategory ?? undefined}
-        onChange={(val) => updateCategory(val ?? undefined)}
-        options={categoryOptions.map((c) => ({
-          value: c.slug,
-          label: c.name,
-        }))}
-      />
-
-      {(searchQuery || selectedCategory) && (
-        <Button
-          size="large"
-          type="text"
-          onClick={() => {
-            clearFilters();
-            setSearchInput('');
-          }}
-        >
-          Clear
-        </Button>
-      )}
-    </Flex>
-
-    {/* Right Section */}
-    <Flex>
-      <Button
-        icon={<ReloadOutlined />}
-        onClick={refetch}
-        loading={isFetching}
-        size="large"
-      >
-        Refresh
-      </Button>
-    </Flex>
-
-  </Flex>
-</div>
+      <div className="toolbar">
+        <div className="toolbar-inner">
+          <div className="toolbar-left">
+            <Search
+              placeholder="Search products..."
+              allowClear
+              className="toolbar-search"
+              value={searchInput}
+              onSearch={(val) => updateSearch(val)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchInput(val);
+                if (debounceRef.current) clearTimeout(debounceRef.current);
+                if (!val) {
+                  updateSearch('');
+                } else if (val.length >= 3) {
+                  debounceRef.current = setTimeout(() => updateSearch(val), 400);
+                }
+              }}
+              loading={isFetching}
+            />
+            <Select
+              placeholder="All Categories"
+              allowClear
+              className="toolbar-category"
+              loading={categoriesLoading}
+              value={selectedCategory ?? undefined}
+              onChange={(val) => updateCategory(val ?? undefined)}
+              options={categoryOptions.map((c) => ({ value: c.slug, label: c.name }))}
+            />
+            {(searchQuery || selectedCategory) && (
+              <Button type="text" onClick={() => { clearFilters(); setSearchInput(''); }}>
+                Clear
+              </Button>
+            )}
+          </div>
+          <div className="toolbar-right">
+            <Button icon={<ReloadOutlined />} onClick={refetch} loading={isFetching}>
+              Refresh
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Table */}
       <div className="table-wrapper bg-white rounded-2xl overflow-hidden shadow-sm">
@@ -258,25 +232,16 @@ const ProductsPage: React.FC = () => {
       {/* Edit Drawer */}
       <Drawer
         title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-            <EditOutlined style={{ color: '#6366f1', flexShrink: 0 }} />
-            <span style={{
-              fontWeight: 700,
-              color: '#0f172a',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}>
-              Edit Product
-            </span>
+          <div className="drawer-title">
+            <EditOutlined className="drawer-title-icon" />
+            <span className="drawer-title-text">Edit Product</span>
           </div>
         }
         placement="right"
-        width={520}
         open={drawerOpen}
         onClose={() => { setDrawerOpen(false); form.resetFields(); }}
         extra={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="drawer-actions">
             <Button icon={<CloseOutlined />} onClick={() => { setDrawerOpen(false); form.resetFields(); }}>
               Cancel
             </Button>

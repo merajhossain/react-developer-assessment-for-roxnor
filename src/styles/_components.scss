@@ -107,3 +107,49 @@
     color: var(--text-muted);
   }
 }
+
+// ─── Drawer Title ─────────────────────────────────────────────────────────────
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  .drawer-title-icon {
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  .drawer-title-text {
+    font-weight: 700;
+    color: var(--text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ─── Drawer Actions ───────────────────────────────────────────────────────────
+.drawer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+// ─── Table Actions ────────────────────────────────────────────────────────────
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  .action-edit {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .action-view {
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 0;
+  }
+}
